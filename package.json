@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "test": "promises-aplus-tests Promise/1. 基础版/index.js"
+    "test": "promises-aplus-tests Promise/index.js"
   },
   "dependencies": {
     "promises-aplus-tests": "^2.1.2"
