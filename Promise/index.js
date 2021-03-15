@@ -18,6 +18,10 @@ const FULFILLED = 'fulfilled'
 const REJECTED = 'rejected'
 
 
+/**
+ * MyPromise
+ * @param {*} fn 回调函数
+ */
 function MyPromise(fn) {
   this.result = null
   this.state = PENDING
@@ -26,6 +30,7 @@ function MyPromise(fn) {
   let onFulfilled = value => transition(this, FULFILLED, value)
   let onRejected = reason => transition(this, REJECTED, reason)
 
+  // 用 ignore 来确保, resolve / reject 只会调用一次
   let ignore = false
   let resolve = value => {
     if (ignore) return
@@ -72,6 +77,9 @@ MyPromise.prototype.then = function(onFulfilled, onRejected) {
   })
 }
 
+MyPromise.prototype.catch = function (onRejected) {
+  return this.then(null, onRejected)
+}
 
 
 /**
@@ -82,19 +90,19 @@ MyPromise.prototype.then = function(onFulfilled, onRejected) {
  */
 const transition = (promise, state, result) => {
   if (promise.state !== PENDING) return
-  console.log('transition', state, result)
   promise.state = state
   promise.result = result
+  // 当状态变更时, 异步清空所有 callbacks
   setTimeout(() => handleCallbacks(promise.callbacks, state, result), 0)
 }
 
 const handleCallbacks = (callbacks, state, result) => {
-  console.log('handleCallbacks', callbacks)
   while (callbacks.length) {
     handleCallback(callbacks.shift(), state, result)
   }
 }
 
+// 在当前 promise 和下一个 promise 之间进行状态传递
 const handleCallback = (callback, state, result) => {
   let { onFulfilled, onRejected, resolve, reject } = callback
 
@@ -109,7 +117,17 @@ const handleCallback = (callback, state, result) => {
   }
 }
 
-
+/**
+ * 一些特殊的 value 被 resolve 时, 要做特殊处理
+ * 1. 如果 result 是当前 promise, 抛错
+ * 2. 如果 result 是另一个 promise, 沿用它的 state 和 result 状态
+ * 3. 如果 result 是一个 thanable 对象, 先取它的 then 函数, 再 call then 函数, 重新进入
+ * @param promise
+ * @param result
+ * @param resolve
+ * @param reject
+ * @returns {MyPromise|*}
+ */
 const resolvePromise = (promise, result, resolve, reject) => {
   if (promise === result) {
     let reason = new TypeError('Can not fufill promise with itself')
@@ -136,7 +154,7 @@ const resolvePromise = (promise, result, resolve, reject) => {
 
 MyPromise.deferred = function() {
   let defer = {};
-  defer.promise = new MyPromise((resolve, reject) => {
+  defer.promise = new Promise((resolve, reject) => {
     defer.resolve = resolve;
     defer.reject = reject;
   });

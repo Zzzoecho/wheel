@@ -1,12 +1,17 @@
 const MyPromise = require('./index')
 
-const sleep = () => {
+const sleep = (num) => {
   return new MyPromise((resolve, reject) => {
-    console.log('in fn()', resolve)
-    resolve('成功')
+    if (num === 1) {
+      resolve('成功')
+    } else {
+      reject('失败')
+    }
   })
 }
 
-sleep().then(res => {
+sleep(2).then(res => {
   console.log(res)
+}).catch(e => {
+  console.log('fail', e)
 })
