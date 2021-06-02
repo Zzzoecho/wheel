@@ -6,6 +6,7 @@
  *
  * https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise
  * promises/A+ 规范: https://promisesaplus.com/
+ * 执行 npm run test 来校验 promise 是否符合A+规范
  */
 const isFunction = val => typeof val === 'function'
 const isObject = obj => !!(obj && typeof obj === 'object')
@@ -161,4 +162,4 @@ MyPromise.deferred = function() {
   return defer;
 }
 
-module.exports = MyPromise
+export default MyPromise

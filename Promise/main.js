@@ -1,4 +1,5 @@
-const MyPromise = require('./index')
+// import MyPromise from "./index.js";
+import MyPromise from "./my.js";
 
 const sleep = (num) => {
   return new MyPromise((resolve, reject) => {
@@ -10,8 +11,27 @@ const sleep = (num) => {
   })
 }
 
-sleep(2).then(res => {
-  console.log(res)
-}).catch(e => {
-  console.log('fail', e)
+// sleep(1).then(res => {
+//   console.log(res)
+// }).catch(e => {
+//   console.log('fail', e)
+// })
+
+// 测试 event loop
+const event = () => {
+  return new MyPromise(resolve => {
+    console.log('in promise')
+    // setTimeout(() => {
+    //   console.log('in setTimeout')
+    //   resolve('1s')
+    // }, 1000)
+    resolve('同步')
+
+  })
+}
+
+event().then((time) => {
+  console.log('then -- 1', time)
+}).then(time => {
+  console.log('then -- 2', time)
 })
